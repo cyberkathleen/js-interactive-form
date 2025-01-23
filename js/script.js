@@ -7,6 +7,11 @@ const colorSelect = document.getElementById('color');
 const colorOptions = colorSelect.children;
 const activitiesFieldset = document.getElementById('activities');
 const activitiesCost = document.getElementById('activities-cost');
+const paymentSelect = document.getElementById('payment');
+const paymentOptions = paymentSelect.children;
+const creditCardSection = document.getElementById('credit-card');
+const paypalSection = document.getElementById('paypal');
+const bitcoinSection = document.getElementById('bitcoin');
 
 // Variables
 let totalCost = 0;
@@ -64,4 +69,26 @@ activitiesFieldset.addEventListener('change', e => {
 
   // Update the total cost displayed
   activitiesCost.innerHTML = `Total: $${totalCost}`;
+});
+
+// Hide "PayPal" and "Bitcoin" payment sections and select "Credit Card" by default
+paypalSection.style.display = 'none';
+bitcoinSection.style.display = 'none';
+paymentSelect.children[1].selected = true;
+
+// Listen for changes in the "Payment" dropdown and display the selected payment section
+paymentSelect.addEventListener('change', e => {
+  const selectedPayment = e.target.value;
+
+  creditCardSection.style.display = 'none';
+  paypalSection.style.display = 'none';
+  bitcoinSection.style.display = 'none';
+
+  if (selectedPayment === 'credit-card') {
+    creditCardSection.style.display = 'block';
+  } else if (selectedPayment === 'paypal') {
+    paypalSection.style.display = 'block';
+  } else if (selectedPayment === 'bitcoin') {
+    bitcoinSection.style.display = 'block';
+  }
 });
