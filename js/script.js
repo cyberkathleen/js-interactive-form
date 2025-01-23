@@ -5,6 +5,11 @@ const jobRoleField = document.getElementById('title');
 const designSelect = document.getElementById('design');
 const colorSelect = document.getElementById('color');
 const colorOptions = colorSelect.children;
+const activitiesFieldset = document.getElementById('activities');
+const activitiesCost = document.getElementById('activities-cost');
+
+// Variables
+let totalCost = 0;
 
 // Set focus on the "Name" field by default
 nameField.focus();
@@ -43,4 +48,20 @@ designSelect.addEventListener('change', e => {
       colorOptions[i].selected = false;
     }
   }
+});
+
+// Listen for changes in the "Register for Activities" fieldset to update the total cost
+activitiesFieldset.addEventListener('change', e => {
+  const activityTarget = e.target;
+  const activityCost = +activityTarget.getAttribute('data-cost');
+
+  // If an activity was checked, add the price to the total, otherwise remove from the total
+  if (activityTarget.checked) {
+    totalCost += activityCost;
+  } else {
+    totalCost -= activityCost;
+  }
+
+  // Update the total cost displayed
+  activitiesCost.innerHTML = `Total: $${totalCost}`;
 });
