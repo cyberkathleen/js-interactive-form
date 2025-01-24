@@ -60,6 +60,26 @@ designSelect.addEventListener('change', e => {
   }
 });
 
+// Prevent conflicting activities from being selected
+activitiesFieldset.addEventListener('change', e => {
+  const selectedActivity = e.target;
+  const selectedDayTime = selectedActivity.getAttribute('data-day-and-time');
+
+  activitiesCheckboxes.forEach(checkbox => {
+    const activityDayTime = checkbox.getAttribute('data-day-and-time');
+
+    if (selectedDayTime === activityDayTime && selectedActivity !== checkbox) {
+      if (selectedActivity.checked) {
+        checkbox.disabled = true;
+        checkbox.parentElement.classList.add('disabled');
+      } else {
+        checkbox.disabled = false;
+        checkbox.parentElement.classList.remove('disabled');
+      }
+    }
+  });
+});
+
 // Add focus/blur event listeners to all activity checkboxes
 activitiesCheckboxes.forEach(checkbox => {
   checkbox.addEventListener('focus', e => {
@@ -109,57 +129,117 @@ paymentSelect.addEventListener('change', e => {
   }
 });
 
+// Helper functions for adding/removing validation classes
+function showValidationError(element) {
+  const parent = element.parentElement;
+  parent.classList.add('not-valid');
+  parent.classList.remove('valid');
+
+  const hint = parent.querySelector('.hint')
+  if (hint) {
+    hint.style.display = 'block';
+  }
+}
+
+function showValidationSuccess(element) {
+  const parent = element.parentElement;
+  parent.classList.add('valid');
+  parent.classList.remove('not-valid');
+  
+  const hint = parent.querySelector('.hint')
+  if (hint) {
+    hint.style.display = 'none';
+  }
+}
+
 // Validation functions
 function validateName() {
   const name = nameField.value.trim();
   const isValidName = name !== '';
+  if (isValidName) {
+    showValidationSuccess(nameField);
+  } else {
+    showValidationError(nameField);
+  }
   return isValidName;
 }
 
 function validateEmail() {
   const email = emailField.value.trim();
   const isValidEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
+  if (isValidEmail) {
+    showValidationSuccess(emailField);
+  } else {
+    showValidationError(emailField);
+  }
   return isValidEmail;
 }
 
 function validateActivities() {
   let isChecked = false;
   activitiesCheckboxes.forEach(checkbox => {
-    if(checkbox.checked) {
+    if (checkbox.checked) {
       isChecked = true;
     }
   });
+  if (isChecked) {
+    showValidationSuccess(document.getElementById('activities-box'));
+  } else {
+    showValidationError(document.getElementById('activities-box'));
+  }
   return isChecked;
 }
 
 function validateCardNumber() {
   const cardNumber = cardNumberField.value.trim();
   const isValidCardNumber = /^\d{13,16}$/.test(cardNumber);
+  if (isValidCardNumber) {
+    showValidationSuccess(cardNumberField);
+  } else {
+    showValidationError(cardNumberField);
+  }
   return isValidCardNumber;
 }
 
 function validateZip() {
   const zip = zipField.value.trim();
   const isValidZip = /^\d{5}$/.test(zip);
+  if (isValidZip) {
+    showValidationSuccess(zipField);
+  } else {
+    showValidationError(zipField);
+  }
   return isValidZip;
 }
 
 function validateCVV() {
   const cvv = cvvField.value.trim();
   const isValidCVV = /^\d{3}$/.test(cvv);
+  if (isValidCVV) {
+    showValidationSuccess(cvvField);
+  } else {
+    showValidationError(cvvField);
+  }
   return isValidCVV;
 }
 
 // Submit even listener for form validation
 form.addEventListener('submit', e => {
+  const isValidName = validateName();
+  const isValidEmail = validateEmail();
+  const isValidactivities = validateActivities();
+  
   // Validate card if it is selected
   let isValidCreditCard = true;
   if (paymentSelect.value === 'credit-card') {
-    isValidCreditCard = validateCardNumber() && validateZip() && validateCVV();
+    const isValidCardNumber = validateCardNumber();
+    const isValidZip = validateZip();
+    const isValidCVV = validateCVV();
+    isValidCreditCard = isValidCardNumber && isValidZip && isValidCVV;
   }
 
   // Prevent the form from submitting if one or more of the required form fields is invalid
-  if (!validateName() || !validateEmail() || !validateActivities() || !isValidCreditCard) {
+  if (!isValidName || !isValidEmail || !isValidactivities || !isValidCreditCard) {
     e.preventDefault();
   }
 });
