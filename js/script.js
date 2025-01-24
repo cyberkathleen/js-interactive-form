@@ -8,6 +8,7 @@ const designSelect = document.getElementById('design');
 const colorSelect = document.getElementById('color');
 const colorOptions = colorSelect.children;
 const activitiesFieldset = document.getElementById('activities');
+const activitiesBox = document.getElementById('activities-box');
 const activitiesCheckboxes = activitiesFieldset.querySelectorAll('input[type="checkbox"]');
 const activitiesCost = document.getElementById('activities-cost');
 const paymentSelect = document.getElementById('payment');
@@ -129,26 +130,19 @@ paymentSelect.addEventListener('change', e => {
   }
 });
 
-// Helper functions for adding/removing validation classes
-function showValidationError(element) {
+// Helper function for adding/removing validation classes
+function showValidationState(element, isValid) {
   const parent = element.parentElement;
-  parent.classList.add('not-valid');
-  parent.classList.remove('valid');
-
   const hint = parent.querySelector('.hint')
-  if (hint) {
-    hint.style.display = 'block';
-  }
-}
 
-function showValidationSuccess(element) {
-  const parent = element.parentElement;
-  parent.classList.add('valid');
-  parent.classList.remove('not-valid');
-  
-  const hint = parent.querySelector('.hint')
-  if (hint) {
+  if (isValid) {
+    parent.classList.add('valid');
+    parent.classList.remove('not-valid');
     hint.style.display = 'none';
+  } else {
+    parent.classList.add('not-valid');
+    parent.classList.remove('valid');
+    hint.style.display = 'block';
   }
 }
 
@@ -156,22 +150,14 @@ function showValidationSuccess(element) {
 function validateName() {
   const name = nameField.value.trim();
   const isValidName = name !== '';
-  if (isValidName) {
-    showValidationSuccess(nameField);
-  } else {
-    showValidationError(nameField);
-  }
+  showValidationState(nameField, isValidName);
   return isValidName;
 }
 
 function validateEmail() {
   const email = emailField.value.trim();
   const isValidEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
-  if (isValidEmail) {
-    showValidationSuccess(emailField);
-  } else {
-    showValidationError(emailField);
-  }
+  showValidationState(emailField, isValidEmail);
   return isValidEmail;
 }
 
@@ -182,46 +168,61 @@ function validateActivities() {
       isChecked = true;
     }
   });
-  if (isChecked) {
-    showValidationSuccess(document.getElementById('activities-box'));
-  } else {
-    showValidationError(document.getElementById('activities-box'));
-  }
+  showValidationState(activitiesBox, isChecked);
   return isChecked;
 }
 
 function validateCardNumber() {
   const cardNumber = cardNumberField.value.trim();
   const isValidCardNumber = /^\d{13,16}$/.test(cardNumber);
-  if (isValidCardNumber) {
-    showValidationSuccess(cardNumberField);
-  } else {
-    showValidationError(cardNumberField);
-  }
+  showValidationState(cardNumberField, isValidCardNumber);
   return isValidCardNumber;
 }
 
 function validateZip() {
   const zip = zipField.value.trim();
   const isValidZip = /^\d{5}$/.test(zip);
-  if (isValidZip) {
-    showValidationSuccess(zipField);
-  } else {
-    showValidationError(zipField);
-  }
+  showValidationState(zipField, isValidZip);
   return isValidZip;
 }
 
 function validateCVV() {
   const cvv = cvvField.value.trim();
   const isValidCVV = /^\d{3}$/.test(cvv);
-  if (isValidCVV) {
-    showValidationSuccess(cvvField);
-  } else {
-    showValidationError(cvvField);
-  }
+  showValidationState(cvvField, isValidCVV);
   return isValidCVV;
 }
+
+// Event listeners for real-time validation
+nameField.addEventListener('keyup', () => {
+  showValidationState(nameField, validateName());
+});
+
+emailField.addEventListener('keyup', () => {
+  showValidationState(emailField, validateEmail());
+});
+
+activitiesFieldset.addEventListener('change', () => {
+  showValidationState(activitiesBox, validateActivities());
+});
+
+cardNumberField.addEventListener('keyup', () => {
+  if (paymentSelect.value === 'credit-card') {
+    showValidationState(cardNumberField, validateCardNumber());
+  }
+});
+
+zipField.addEventListener('keyup', () => {
+  if (paymentSelect.value === 'credit-card') {
+    showValidationState(zipField, validateZip());
+  }
+});
+
+cvvField.addEventListener('keyup', () => {
+  if (paymentSelect.value === 'credit-card') {
+    showValidationState(cvvField, validateCVV());
+  }
+});
 
 // Submit even listener for form validation
 form.addEventListener('submit', e => {
