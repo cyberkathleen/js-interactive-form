@@ -60,6 +60,17 @@ designSelect.addEventListener('change', e => {
   }
 });
 
+// Add focus/blur event listeners to all activity checkboxes
+activitiesCheckboxes.forEach(checkbox => {
+  checkbox.addEventListener('focus', e => {
+    e.target.parentElement.classList.add('focus');
+  });
+
+  checkbox.addEventListener('blur', e => {
+    e.target.parentElement.classList.remove('focus');
+  });
+});
+
 // Listen for changes in the "Register for Activities" fieldset to update the total cost
 activitiesFieldset.addEventListener('change', e => {
   const activityTarget = e.target;
