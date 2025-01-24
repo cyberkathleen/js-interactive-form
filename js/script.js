@@ -1,17 +1,22 @@
 // Element selectors
+const form = document.querySelector('form');
 const nameField = document.getElementById('name');
+const emailField = document.getElementById('email');
 const otherJobField = document.getElementById('other-job-role');
 const jobRoleField = document.getElementById('title');
 const designSelect = document.getElementById('design');
 const colorSelect = document.getElementById('color');
 const colorOptions = colorSelect.children;
 const activitiesFieldset = document.getElementById('activities');
+const activitiesCheckboxes = activitiesFieldset.querySelectorAll('input[type="checkbox"]');
 const activitiesCost = document.getElementById('activities-cost');
 const paymentSelect = document.getElementById('payment');
-const paymentOptions = paymentSelect.children;
 const creditCardSection = document.getElementById('credit-card');
 const paypalSection = document.getElementById('paypal');
 const bitcoinSection = document.getElementById('bitcoin');
+const cardNumberField = document.getElementById('cc-num');
+const zipField = document.getElementById('zip');
+const cvvField = document.getElementById('cvv');
 
 // Variables
 let totalCost = 0;
@@ -92,3 +97,59 @@ paymentSelect.addEventListener('change', e => {
     bitcoinSection.style.display = 'block';
   }
 });
+
+// Validation functions
+function validateName() {
+  const name = nameField.value.trim();
+  const isValidName = name !== '';
+  return isValidName;
+}
+
+function validateEmail() {
+  const email = emailField.value.trim();
+  const isValidEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
+  return isValidEmail;
+}
+
+function validateActivities() {
+  let isChecked = false;
+  activitiesCheckboxes.forEach(checkbox => {
+    if(checkbox.checked) {
+      isChecked = true;
+    }
+  });
+  return isChecked;
+}
+
+function validateCardNumber() {
+  const cardNumber = cardNumberField.value.trim();
+  const isValidCardNumber = /^\d{13,16}$/.test(cardNumber);
+  return isValidCardNumber;
+}
+
+function validateZip() {
+  const zip = zipField.value.trim();
+  const isValidZip = /^\d{5}$/.test(zip);
+  return isValidZip;
+}
+
+function validateCVV() {
+  const cvv = cvvField.value.trim();
+  const isValidCVV = /^\d{3}$/.test(cvv);
+  return isValidCVV;
+}
+
+// Submit even listener for form validation
+form.addEventListener('submit', e => {
+  // Validate card if it is selected
+  let isValidCreditCard = true;
+  if (paymentSelect.value === 'credit-card') {
+    isValidCreditCard = validateCardNumber() && validateZip() && validateCVV();
+  }
+
+  // Prevent the form from submitting if one or more of the required form fields is invalid
+  if (!validateName() || !validateEmail() || !validateActivities() || !isValidCreditCard) {
+    e.preventDefault();
+  }
+});
+
