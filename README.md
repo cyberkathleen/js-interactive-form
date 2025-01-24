@@ -2,7 +2,7 @@
 
 This project is an interactive and user-friendly web form designed to demonstrate custom form validation using vanilla JavaScript. The form dynamically provides real-time feedback to users, ensuring a smooth and accessible experience. It also includes features to improve usability, such as enabling/disabling conflicting options and validation error hints.
 
----
+
 
 ## **Features**
 
@@ -30,15 +30,30 @@ This project is an interactive and user-friendly web form designed to demonstrat
   - Zip Code: Must be a 5-digit number.
   - CVV: Must be a 3-digit number.
 
-### 6. **Real-Time Validation**
+### 6. **Dynamic and Specific Error Messages**
+To improve user experience, the form provides dynamic and specific error messages for required fields. These messages change based on the type of error encountered. They are displayed in real-time as users interact with the form, helping them correct errors immediately. Examples include:
+
+- **Name Field**:
+  - "Name field cannot be empty"
+- **Email Field**:
+  - "Email field cannot be empty"
+  - "Email must be formatted correctly (e.g., name@domain.com)"
+- **Activities Section**:
+  - "Choose at least one activity"
+- **Credit Card Fields**:
+  - Card number: "Card Number cannot be empty" or "Card number must be between 13 - 16 digits"
+  - ZIP: "ZIP Code cannot be empty" or "ZIP Code must be 5 digits"
+  - CVV: "CVV cannot be empty" or "CVV must be 3 digits"
+
+### 7. **Real-Time Validation**
 - All required fields listen for user interaction (`keyup`, `change`, etc.) and dynamically provide feedback as the user types or interacts.
 - Valid fields display visual confirmation, while invalid fields show error hints.
 
-### 7. **Accessibility Features**
+### 8. **Accessibility Features**
 - Activities include focus and blur event listeners to provide visible focus states for keyboard navigation.
 - Error messages are clear and concise, ensuring accessibility for screen readers and keyboard-only users.
 
----
+
 
 ## **Technologies**
 

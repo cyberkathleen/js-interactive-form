@@ -130,8 +130,8 @@ paymentSelect.addEventListener('change', e => {
   }
 });
 
-// Helper function for adding/removing validation classes
-function showValidationState(element, isValid) {
+// Helper function for showing specific error messages
+function showValidationState(element, isValid, error = '') {
   const parent = element.parentElement;
   const hint = parent.querySelector('.hint')
 
@@ -142,6 +142,7 @@ function showValidationState(element, isValid) {
   } else {
     parent.classList.add('not-valid');
     parent.classList.remove('valid');
+    hint.innerHTML = error;
     hint.style.display = 'block';
   }
 }
@@ -149,16 +150,27 @@ function showValidationState(element, isValid) {
 // Validation functions
 function validateName() {
   const name = nameField.value.trim();
-  const isValidName = name !== '';
-  showValidationState(nameField, isValidName);
-  return isValidName;
+  if (name === '') {
+    showValidationState(nameField, false, 'Name field cannot be empty');
+    return false;
+  } else {
+    showValidationState(nameField, true);
+    return true;
+  }
 }
 
 function validateEmail() {
   const email = emailField.value.trim();
-  const isValidEmail = /^[^@]+@[^@.]+\.[a-z]+$/i.test(email);
-  showValidationState(emailField, isValidEmail);
-  return isValidEmail;
+  if (email === '') {
+    showValidationState(emailField, false, 'Email field cannot be empty');
+    return false;
+  } else if (!/^[^@]+@[^@.]+\.[a-z]+$/i.test(email)) {
+    showValidationState(emailField, false, 'Email must be formatted correctly (e.g., name@domain.com)');
+    return false;
+  } else {
+    showValidationState(emailField, true);
+    return true;
+  }
 }
 
 function validateActivities() {
@@ -168,59 +180,78 @@ function validateActivities() {
       isChecked = true;
     }
   });
-  showValidationState(activitiesBox, isChecked);
-  return isChecked;
+
+  if (!isChecked) {
+    showValidationState(activitiesBox, false, 'Choose at least one activity');
+    return false;
+  } else {
+    showValidationState(activitiesBox, true);
+    return true;
+  }
 }
 
 function validateCardNumber() {
   const cardNumber = cardNumberField.value.trim();
-  const isValidCardNumber = /^\d{13,16}$/.test(cardNumber);
-  showValidationState(cardNumberField, isValidCardNumber);
-  return isValidCardNumber;
+  if (cardNumber === '') {
+    showValidationState(cardNumberField, false, 'Card Number cannot be empty');
+    return false;
+  } else if (!/^\d{13,16}$/.test(cardNumber)) {
+    showValidationState(cardNumberField, false, 'Card Number must be between 13 - 16 digits');
+    return false;
+  } else {
+    showValidationState(cardNumberField, true);
+    return true;
+  }
 }
 
 function validateZip() {
   const zip = zipField.value.trim();
-  const isValidZip = /^\d{5}$/.test(zip);
-  showValidationState(zipField, isValidZip);
-  return isValidZip;
+  if (zip === '') {
+    showValidationState(zipField, false, 'ZIP Code cannot be empty');
+    return false;
+  } else if (!/^\d{5}$/.test(zip)) {
+    showValidationState(zipField, false, 'ZIP Code must be 5 digits');
+    return false;
+  } else {
+    showValidationState(zipField, true);
+    return true;
+  }
 }
 
 function validateCVV() {
   const cvv = cvvField.value.trim();
-  const isValidCVV = /^\d{3}$/.test(cvv);
-  showValidationState(cvvField, isValidCVV);
-  return isValidCVV;
+  if (cvv === '') {
+    showValidationState(cvvField, false, 'CVV cannot be empty');
+    return false;
+  } else if (!/^\d{3}$/.test(cvv)) {
+    showValidationState(cvvField, false, 'CVV must be 3 digits');
+    return false;
+  } else {
+    showValidationState(cvvField, true);
+    return true;
+  }
 }
 
 // Event listeners for real-time validation
-nameField.addEventListener('keyup', () => {
-  showValidationState(nameField, validateName());
-});
-
-emailField.addEventListener('keyup', () => {
-  showValidationState(emailField, validateEmail());
-});
-
-activitiesFieldset.addEventListener('change', () => {
-  showValidationState(activitiesBox, validateActivities());
-});
+nameField.addEventListener('keyup', validateName);
+emailField.addEventListener('keyup', validateEmail);
+activitiesFieldset.addEventListener('change', validateActivities);
 
 cardNumberField.addEventListener('keyup', () => {
   if (paymentSelect.value === 'credit-card') {
-    showValidationState(cardNumberField, validateCardNumber());
+    validateCardNumber();
   }
 });
 
 zipField.addEventListener('keyup', () => {
   if (paymentSelect.value === 'credit-card') {
-    showValidationState(zipField, validateZip());
+    validateZip();
   }
 });
 
 cvvField.addEventListener('keyup', () => {
   if (paymentSelect.value === 'credit-card') {
-    showValidationState(cvvField, validateCVV());
+    validateCVV();
   }
 });
 
